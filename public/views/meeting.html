@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<table style="width: 100%">
+			<tr>
+				<td style="text-align: left; vertical-align: middle; width: 20%;">
+					<button ng-click="cancel()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> Back</button>
+				</td>
+				<td style="text-align: center; vertical-align: middle; width: 60%;">
+					<strong>Introduce</strong>
+				</td>
+				<td style="text-align: right; vertical-align: middle; width: 20%;">
+					&nbsp;
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="panel-body text-center">
+		<img ng-if="(state != 'duplicate') && (state != 'error')" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
+		<p ng-if="(state != 'duplicate') && (state != 'error')" style="margin-top: 15px;" ng-if="person.last"><strong>{{person.first}} {{person.last}}</strong></p>
+	</div>
+	<div ng-if="state != 'meeting'" class="panel-footer">
+		<table style="width: 100%">
+			<tr>
+				<td style="text-align: left; vertical-align: middle; width: 20%;">
+					<button ng-if="state == 'searching' || state == 'found'" ng-click="found()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span> Found</button>
+				</td>
+				<td style="text-align: center; vertical-align: middle; width: 60%;">
+					<p ng-if="!current">Event has ended.</p>
+					<p ng-if="state == 'duplicate'">Another application is currently scanning.</p>
+					<p ng-if="state == 'error'">A network error has occurred; check your network connectivity and try again.</p>
+					<div ng-if="state == 'scanning' || state == 'waiting'" class="scanning"></div>
+					<p ng-if="state == 'found'">{{person.first}} found you.</p>
+				</td>
+				<td style="text-align: right; vertical-align: middle; width: 20%;">
+					&nbsp;
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
