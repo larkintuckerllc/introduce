@@ -179,12 +179,12 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 										{token: linkedIn.token, event: $scope.event._id},
 										function() {
 											// SUCCESS
-											var channelRec = new Channels({});
-											channelRec.$save(
-												{token: linkedIn.token},
+											channel.open(linkedIn.person,
 												function() {
 													// SUCCESS
-													channel.open(linkedIn.person,
+													var channelRec = new Channels({});
+													channelRec.$save(
+														{token: linkedIn.token},
 														function() {
 															// SUCCESS
 															$scope.cancel = function() {
@@ -199,7 +199,6 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 																}
 															};
 															var scanningPerson = findScanningPerson(scannings, introductionsFrom, introductionsTo); 
-
 															if (scanningPerson) {
 																goSearching(scanningPerson, true);
 															} else {
@@ -208,37 +207,36 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 														},
 														function() {
 															// ERROR
+															$scope.state = 'duplicate';
 															blockUI.stop();
-															$scope.state = 'error';
-															$scope.$apply();
-														},
-														function(data) {
-															// MESSAGE
-															console.log(data);
-															var message = angular.fromJson(data.data);
-															if (message.state == 'searching') {
-																goSearching(message.person, false);
-															} 
-															if ((message.state == 'found') && (message.person == $scope.person._id)) {
-																goFound();
-															} 
-															if ((message.state == 'meeting') && (message.person == $scope.person._id)) {
-																goMeeting(false);
-															}
-														},
-														function() {
-															// CLOSE
-															$scope.cancel = function() {
-																navigator.navigate('/events/' + $scope.event._id);
-															};
 														}
 													);
-
 												},
 												function() {
 													// ERROR
-													$scope.state = 'duplicate';
 													blockUI.stop();
+													$scope.state = 'error';
+													$scope.$apply();
+												},
+												function(data) {
+													// MESSAGE
+													console.log(data);
+													var message = angular.fromJson(data.data);
+													if (message.state == 'searching') {
+														goSearching(message.person, false);
+													} 
+													if ((message.state == 'found') && (message.person == $scope.person._id)) {
+														goFound();
+													} 
+													if ((message.state == 'meeting') && (message.person == $scope.person._id)) {
+														goMeeting(false);
+													}
+												},
+												function() {
+													// CLOSE
+													$scope.cancel = function() {
+														navigator.navigate('/events/' + $scope.event._id);
+													};
 												}
 											);
 										},
