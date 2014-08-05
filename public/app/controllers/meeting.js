@@ -4,7 +4,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
         if (linkedIn.authenticated()) {
 		blockUI.start();
 		$scope.state = 'loading';
-		$scope.person = {first: '', last: '', picture: '/assets/img/someone.png'};
+		$scope.person = {first: '', last: '', picture: 'assets/img/someone.png'};
 		var d = new Date();
 		var now = d.getTime();
 		$scope.current = true;
@@ -18,7 +18,6 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 			scannings = $filter('orderBy')(scannings, 'order', true); 
 			for (var i = 0; i < scannings.length; i++) {
 				found = scannings[i]._id;
-				console.log("FOUND: " + found);
 				for (var j = 0; j < introductionsFrom.length; j++) {
 					if (introductionsFrom[j].to == found) {
 						found = false;
@@ -58,7 +57,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 				function() {
 					// SUCCESS
 					if (! person.picture) {
-						person.picture = '/assets/img/someone.png';
+						person.picture = 'assets/img/someone.png';
 					}
 					if (directly) {
 						message.searching(person._id,
@@ -207,6 +206,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 														},
 														function() {
 															// ERROR
+															channel.close();
 															$scope.state = 'duplicate';
 															blockUI.stop();
 														}
@@ -220,7 +220,6 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 												},
 												function(data) {
 													// MESSAGE
-													console.log(data);
 													var message = angular.fromJson(data.data);
 													if (message.state == 'searching') {
 														goSearching(message.person, false);
