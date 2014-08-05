@@ -3,7 +3,7 @@ Introduce
 
 Mobile Web Application for Mixers
 
-This mobile web application available at <http://introduce.solutions> is designed to allow individuals to introduce themselves to one another at a mixer.
+This mobile web application available at <http://introduce.solutions/app/> is designed to allow individuals to introduce themselves to one another at a mixer.
 
 It is the first (potentially) useful application built upon the MEAN framework that was developed and documented in the hellomean - hellomean6 and hellochanel "hello world" applications. 
 
