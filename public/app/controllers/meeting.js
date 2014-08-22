@@ -1,10 +1,10 @@
 var meetingControllers = angular.module('meetingControllers', []);
 
-meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routeParams', 'linkedIn', 'Events', 'channel', 'Channels', 'Scannings', 'Persons', 'message', 'Introductions', 'blockUI', '$filter', function($scope, navigator, $routeParams, linkedIn, Events, channel, Channels, Scannings, Persons, message, Introductions, blockUI, $filter) {
+meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routeParams', 'linkedIn', 'Events', 'channel', 'Scannings', 'Persons', 'message', 'Introductions', 'blockUI', '$filter', function($scope, navigator, $routeParams, linkedIn, Events, channel, Scannings, Persons, message, Introductions, blockUI, $filter) {
+	blockUI.start();
         if (linkedIn.authenticated()) {
-		blockUI.start();
 		$scope.state = 'loading';
-		$scope.person = {first: '', last: '', picture: 'assets/img/someone.png'};
+		$scope.person = {};
 		var d = new Date();
 		var now = d.getTime();
 		$scope.current = true;
@@ -33,7 +33,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 		};
 
 		var goScanning = function() {
-			// POST SCANNING
+			blockUI.start();
 			scanning = new Scannings({event: $scope.event._id});
 			scanning.$save(
 				{token: linkedIn.token},
@@ -46,20 +46,19 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 					// ERROR
 					channel.close();
 					$scope.state = 'error';
-					blockUI.stop();
+					blockUI.reset();
 				}
 			);
 		};
 
 		var goSearching = function(_id, directly) {
+			blockUI.start();
 			var person = Persons.get({token: linkedIn.token,
 				_id: _id},
 				function() {
 					// SUCCESS
-					if (! person.picture) {
-						person.picture = 'assets/img/someone.png';
-					}
 					if (directly) {
+						blockUI.start();
 						message.searching(person._id,
 							function() {
 								// SUCCESS
@@ -71,7 +70,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 								// ERROR
 								channel.close();
 								$scope.state = 'error';
-								blockUI.stop();
+								blockUI.reset();
 							}
 						);
 					} else {
@@ -87,20 +86,20 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 								// ERROR
 								channel.close();
 								$scope.state = 'error';
-								blockUI.stop();
+								blockUI.reset();
 							}
 						);
 					}
+					blockUI.stop();
 				},
 				function() {
 					// ERROR
 					channel.close();
 					$scope.state = 'error';
-					blockUI.stop();
+					blockUI.reset();
 				}
 			);
 		};
-
 
 		var goWaiting = function() {
 			blockUI.start();
@@ -114,19 +113,18 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 					// ERROR
 					channel.close();
 					$scope.state = 'error';
-					blockUI.stop();
+					blockUI.reset();
 				}
 			);
 		};
 
 		var goFound = function() {
 			$scope.state = 'found';
-			$scope.$apply();
 		};
 
 		var goMeeting = function(directly) {
-			blockUI.start();
 			if (directly) {
+				blockUI.start();
 				message.meeting($scope.person._id,
 					function() {
 						// SUCCESS
@@ -138,11 +136,12 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 						// ERROR
 						channel.close();
 						$scope.state = 'error';
-						blockUI.stop();
+						blockUI.reset();
 					}
 				);
 			} else {
 				var introduction = new Introductions({event: $scope.event._id, from: $scope.person._id});
+				blockUI.start();
 				introduction.$save(
 					{token: linkedIn.token},
 					function() {
@@ -155,128 +154,132 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 						// ERROR
 						channel.close();
 						$scope.state = 'error';
-						blockUI.stop();
+						blockUI.reset();
 					}
 				);
 			}
 		};
 
+		blockUI.start();
 		$scope.event = Events.get({token: linkedIn.token, _id: $routeParams._id},
 			function() {
 				// SUCCESS
 				$scope.current = ($scope.event.end >= now);
 				if ($scope.current) {
-					var introductionsFrom = Introductions.query(
-							{token: linkedIn.token, event: $scope.event._id, from: true},
-						function() {
-							//SUCCESS
-							var introductionsTo = Introductions.query(
-									{token: linkedIn.token, event: $scope.event._id, to: true},
-								function() {
-									//SUCCESS
-									var scannings = Scannings.query(
-										{token: linkedIn.token, event: $scope.event._id},
-										function() {
-											// SUCCESS
-											channel.open(linkedIn.person,
-												function() {
-													// SUCCESS
-													var channelRec = new Channels({});
-													channelRec.$save(
-														{token: linkedIn.token},
-														function() {
-															// SUCCESS
-															$scope.cancel = function() {
-																channel.close();
-																navigator.navigate('/events/' + $scope.event._id);
-															};
-															$scope.found = function() {
-																if ($scope.state != 'found') {
-																	goWaiting();	
-																} else {
-																	goMeeting(true);
-																}
-															};
-															var scanningPerson = findScanningPerson(scannings, introductionsFrom, introductionsTo); 
-															if (scanningPerson) {
-																goSearching(scanningPerson, true);
-															} else {
-																goScanning();
-															} 
-														},
-														function() {
-															// ERROR
-															channel.close();
-															$scope.state = 'duplicate';
-															blockUI.stop();
-														}
-													);
-												},
-												function() {
-													// ERROR
-													blockUI.stop();
-													$scope.state = 'error';
-													$scope.$apply();
-												},
-												function(data) {
-													// MESSAGE
-													var message = angular.fromJson(data.data);
-													if (message.state == 'searching') {
-														goSearching(message.person, false);
-													} 
-													if ((message.state == 'found') && (message.person == $scope.person._id)) {
-														goFound();
-													} 
-													if ((message.state == 'meeting') && (message.person == $scope.person._id)) {
-														goMeeting(false);
-													}
-												},
-												function() {
-													// CLOSE
-													$scope.cancel = function() {
-														navigator.navigate('/events/' + $scope.event._id);
-													};
-												}
-											);
-										},
-										function() {
-											// ERROR
-											navigator.navigate('/network-error');
-											blockUI.stop();
-										}
-									);
-								},
-								function() {
-									// ERROR
-									navigator.navigate('/network-error');
-									blockUI.stop();
-								}
-							);
-						},
-						function() {
-							// ERROR
-							navigator.navigate('/network-error');
-							blockUI.stop();
-						}
-					);
+
+// INDENT
+blockUI.start();
+var introductionsFrom = Introductions.query(
+	{token: linkedIn.token, event: $scope.event._id, from: true},
+	function() {
+		//SUCCESS
+		blockUI.start();
+		var introductionsTo = Introductions.query(
+			{token: linkedIn.token, event: $scope.event._id, to: true},
+			function() {
+				//SUCCESS
+				blockUI.start();
+				var scannings = Scannings.query(
+					{token: linkedIn.token, event: $scope.event._id},
+					function() {
+
+	// INDENT
+	// SUCCESS
+	blockUI.start();
+	channel.open(linkedIn.person,
+		function() {
+			// SUCCESS
+			$scope.cancel = function() {
+				channel.close();
+				navigator.navigate('/events/' + $scope.event._id);
+			};
+			$scope.found = function() {
+				if ($scope.state != 'found') {
+					goWaiting();	
+				} else {
+					goMeeting(true);
+				}
+			};
+			var scanningPerson = findScanningPerson(scannings, introductionsFrom, introductionsTo); 
+			if (scanningPerson) {
+				goSearching(scanningPerson, true);
+			} else {
+				goScanning();
+			} 
+			blockUI.stop();
+		},
+		function() {
+			// ERROR
+			$scope.state = 'error';
+			blockUI.reset();
+		},
+		function(data) {
+			// MESSAGE
+			var message = angular.fromJson(data);
+			if (message.state == 'searching') {
+				goSearching(message.person, false);
+			} 
+			if ((message.state == 'found') && (message.person == $scope.person._id)) {
+				goFound();
+			} 
+			if ((message.state == 'meeting') && (message.person == $scope.person._id)) {
+				goMeeting(false);
+			}
+		},
+		function() {
+			// CLOSE
+			$scope.cancel = function() {
+				navigator.navigate('/events/' + $scope.event._id);
+			};
+		}
+	);
+	blockUI.stop();
+	// INDENT END
+					},
+					function() {
+						// ERROR
+						navigator.navigate('/network-error');
+						blockUI.reset();
+					}
+				);
+				blockUI.stop();
+			},
+			function() {
+				// ERROR
+				navigator.navigate('/network-error');
+				blockUI.reset();
+			}
+		);
+		blockUI.stop();
+	},
+	function() {
+		// ERROR
+		navigator.navigate('/network-error');
+		blockUI.reset();
+	}
+);
+blockUI.stop();
+// INDENT END
+
 				} else {
 					navigator.navigate('/events/' + $scope.event._id);
-					blockUI.stop();
 				}
+				blockUI.stop();
 			},
 			function(res) {
 				// ERROR
 				if (res.status == 401) {
 					linkedIn.logout();
 					navigator.navigate('/login');
-					blockUI.stop();
 				} else {
 					navigator.navigate('/network-error');
-					blockUI.stop();
 				}
+				blockUI.reset();
 			}
 		);
+		blockUI.stop();
         } else {
                 navigator.navigate('/login');
+		blockUI.reset();
         }
 }]);

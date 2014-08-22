@@ -3,7 +3,12 @@ var app = express();
 
 // CONTRIBUTED MIDDLEWARE
 var serveStatic = require('serve-static');
-app.use(serveStatic('public', {'index': ['index.html']}));
+app.use(serveStatic('public', {
+	'index': ['index.html'], 
+	'setHeaders': function(res, path) {
+       		res.setHeader("cache-control","private, max-age=0, no-cache");
+	} 
+}));
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
@@ -16,10 +21,11 @@ mongoose.connect('mongodb://localhost/hellodb');
 // ROUTES
 app.use('/linkedin', require('./server/routes/linkedin'));
 app.use('/events', require('./server/routes/events'));
-app.use('/channels', require('./server/routes/channels'));
 app.use('/scannings', require('./server/routes/scannings'));
 app.use('/persons', require('./server/routes/persons'));
 app.use('/messages', require('./server/routes/messages'));
 app.use('/introductions', require('./server/routes/introductions'));
+app.use('/organizers', require('./server/routes/organizers'));
+app.use('/channels', require('./server/routes/channels'));
 
 app.listen(3000);

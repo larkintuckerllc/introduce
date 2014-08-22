@@ -9,7 +9,8 @@ var myApp = angular.module('myApp', [
 	'errorsControllers',
 	'indexControllers',
 	'eventsControllers',
-	'meetingControllers'
+	'meetingControllers',
+	'organizerControllers'
 ])
 .config(function(blockUIConfigProvider) {
 	blockUIConfigProvider.autoBlock(false);

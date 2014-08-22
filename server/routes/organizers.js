@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var channels = require('../controllers/channels');
+var organizers = require('../controllers/organizers');
 
 module.exports = router;
-router.delete('/:_id', channels.delete);
+router.get('/', organizers.findAll);
 
 module.exports = router;

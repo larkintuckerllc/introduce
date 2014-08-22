@@ -15,8 +15,9 @@
 		</table>
 	</div>
 	<div class="panel-body text-center">
-		<img ng-if="(state != 'duplicate') && (state != 'error')" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
-		<p ng-if="(state != 'duplicate') && (state != 'error')" style="margin-top: 15px;" ng-if="person.last"><strong>{{person.first}} {{person.last}}</strong></p>
+		<img ng-if="(state != 'duplicate') && (state != 'error') && person.picture" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
+		<img ng-if="(state != 'duplicate') && (state != 'error') && !person.picture" src="assets/img/someone.png" class="img-responsive img-thumbnail"/>
+		<p ng-if="(state != 'duplicate') && (state != 'error') && person.last" style="margin-top: 15px;"><strong>{{person.first}} {{person.last}}</strong></p>
 	</div>
 	<div ng-if="state != 'meeting'" class="panel-footer">
 		<table style="width: 100%">

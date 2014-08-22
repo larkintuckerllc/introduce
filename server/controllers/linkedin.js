@@ -1,9 +1,10 @@
 var https = require('https');
 var LinkedIn = require('../models/linkedin');
 
+// TODO JET REMOVED SECRET 
 var OAuth2 = {
-	clientID: 'XXXXXXX',
-	clientSecret: 'XXXXXXX',
+	clientID: 'XXXXX',
+	clientSecret: 'XXXXX',
 	site: 'www.linkedin.com',
 	authorizationPath: '/uas/oauth2/authorization',
 	tokenPath: '/uas/oauth2/accessToken'
@@ -24,7 +25,7 @@ exports.login = function(req, res) {
 			'&state=' + state +
 			'&redirect_uri=' + redirectURI);
 	} else {
-		res.redirect('/');
+		res.redirect('/app/');
 	}
 };
 
@@ -55,26 +56,26 @@ exports.callback = function(req, res) {
 					LinkedIn.authenticated(linkedInToken.access_token, 
 						function(credential) {
 							// SUCCESS
-							res.redirect('/#/?token=' + credential._id +
+							res.redirect('/app/#/?token=' + credential._id +
 								'&person=' + credential.person +
 								'&state=' + state);
 						},
 						function() {
 							// ERROR
-							res.redirect('/');
+							res.redirect('/app/');
 						}
 					);
 				});
 	
 			} else {
-				res.redirect('/');
+				res.redirect('/app/');
 			}
   		});
 		req2.on('error', function(e) {
-			res.redirect('/');
+			res.redirect('/app/');
 		});
 		req2.end();
 	} else {
-		res.redirect('/');
+		res.redirect('/app/');
 	}
 };

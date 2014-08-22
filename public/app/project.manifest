@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2014-08-05v5
+# 2014-08-22v1
 
 CACHE:
 
@@ -30,12 +30,14 @@ views/meeting.html
 views/index-home.html
 views/events.html
 views/index-about.html
+views/organizer.html
 app.js
 app.css
 controllers/index.js
 controllers/meeting.js
 controllers/events.js
 controllers/errors.js
+controllers/organizer.js
 favicon.ico
 
 NETWORK:

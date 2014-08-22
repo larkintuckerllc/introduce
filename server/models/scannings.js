@@ -4,7 +4,6 @@ var Schema = mongoose.Schema;
 var scanningSchema = new Schema({
 	_id: {
 		type: String,
-		ref: 'Channel',
 		required: true
 	},
 	event: {

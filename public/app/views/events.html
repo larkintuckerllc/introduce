@@ -9,7 +9,8 @@
 					<strong>Introduce</strong>
 				</td>
 				<td style="text-align: right; vertical-align: middle; width: 20%;">
-					&nbsp;
+					<button ng-if="isOrganizer" ng-click="navigate('/organizer/' + event._id)" type="button" class="btn btn-default btn-sm">Organizer <span class="glyphicon glyphicon-chevron-right"></span></button>
+					<span ng-if="!isOrganizer">&nbsp;</span>
 				</td>
 			</tr>
 		</table>
@@ -17,7 +18,27 @@
 	<div class="panel-body">
 		<p class="list-group-item-text"><strong>{{event.name}}</strong></p>
 		<p class="list-group-item-text">{{event.start | date:'short'}} ({{(event.end - event.start) / 3600000}} hrs)</p>
-
+		<div ng-if="organizers.length != 0" class="panel panel-default" style="margin-top: 15px;">
+			<div class="panel-heading">
+				Organizers
+			</div>
+			<ul class="list-group">
+				<li class="list-group-item" ng-repeat="person in organizers| orderBy:'first'">
+					<table style="width: 100%">
+						<tr>
+							<td style="text-align: left; vertical-align: middle; width: 20%">
+                						<img ng-if="person.picture" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
+                						<img ng-if="!person.picture" src="assets/img/someone.png" class="img-responsive img-thumbnail"/>
+							</td>
+							<td style="text-align: center; vertical-align: middle; width: 80%">
+								<strong>{{person.first}} {{person.last}}<strong>
+							</td>
+						</tr>
+					</table>
+					
+				</li>
+			</ul>
+		</div>
 		<div ng-if="persons.length != 0" class="panel panel-default" style="margin-top: 15px;">
 			<div class="panel-heading">
 				Introductions
@@ -27,7 +48,8 @@
 					<table style="width: 100%">
 						<tr>
 							<td style="text-align: left; vertical-align: middle; width: 20%">
-                						<img ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
+                						<img ng-if="person.picture" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
+                						<img ng-if="!person.picture" src="assets/img/someone.png" class="img-responsive img-thumbnail"/>
 							</td>
 							<td style="text-align: center; vertical-align: middle; width: 80%">
 								<strong>{{person.first}} {{person.last}}<strong>
@@ -52,7 +74,7 @@
 					<p><strong>Sponsored by:</strong></p>
 				</td>
 				<td style="text-align: right; vertical-align: top; width: 20%";>
-					<a href="{{event.link}}" target="_blank"><img ng-src="{{event.image}}" class="img-responsive img-thumbnail"/></a>
+					<a ng-if="current" href="{{event.link}}" target="_blank"><img ng-src="{{event.image}}" class="img-responsive img-thumbnail"/></a>
 				</td>
 			</tr>
 		</table>

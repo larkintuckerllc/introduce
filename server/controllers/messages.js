@@ -1,16 +1,22 @@
 var http = require('http');
 var LinkedIn = require('../models/linkedin');
 
+// TODO JET: REMOVED SECRET
 var send = function(person, message, success, error) {
 	var options = {
-		hostname: 'hello-channel.appspot.com',
-		port: 80,
-		path: '/hellosend' + 
-			'?client_id=' + person +
-			'&message=' + JSON.stringify(message),
+		hostname: 'introduce.solutions',
+		port: 3001,
+		path: '/message/' + 
+			person +
+			'?token=XXXXX' + 
+			'&data=' + JSON.stringify(message),
 		method: 'GET'
 	};
 	var req2 = http.request(options, function(res2) {
+		res2.on('data', function (chunk) {
+		});
+		res2.on('end', function () {
+		});
 		if (res2.statusCode == 200) {
 			success();
 		} else {

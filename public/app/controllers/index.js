@@ -16,6 +16,7 @@ indexControllers.controller('IndexHomeCtrl', ['$scope', 'navigator', 'linkedIn',
 		var now = d.getTime();
 		$scope.currentEvents = [];
 		$scope.futureEvents = [];
+		blockUI.start();
 		var events = Events.query(
 			{token: linkedIn.token, min_end: now},	
 			function() {
@@ -29,17 +30,17 @@ indexControllers.controller('IndexHomeCtrl', ['$scope', 'navigator', 'linkedIn',
 				if (res.status == 401) {
 					linkedIn.logout();
 					navigator.navigate('/login');
-					blockUI.stop();
 				} else {
 					navigator.navigate('/network-error');
-					blockUI.stop();
 				}
+				blockUI.reset();
 			}
 		);
 		$scope.events = events;
+		blockUI.stop();
 	} else {
 		navigator.navigate('/login');	
-		blockUI.stop();
+		blockUI.reset();
 	}
 }]);
 

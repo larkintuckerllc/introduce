@@ -1,5 +1,6 @@
 var LinkedIn = require('../models/linkedin');
 var Introduction = require('../models/introductions');
+var Organizer = require('../models/organizers');
 
 exports.findAll = function(req, res) {
 	res.setHeader("cache-control","private, max-age=0, no-cache");
@@ -10,24 +11,55 @@ exports.findAll = function(req, res) {
 			var conditions = {};
 			if (req.query.event) {
 				conditions.event = req.query.event;
-			}
-			if (req.query.from) {
-				conditions.from = credential.person;
-			}
-			if (req.query.to) {
-				conditions.to = credential.person;
-			}
-			if (req.query.from || req.query.to) {
-				Introduction.find(conditions, 
-					function(err, introductions) {
-						if (!err) {
-							res.send(introductions);
-						} else {
-							res.statusCode = 500;
-							res.send('');
+				if (req.query.from) {
+					conditions.from = credential.person;
+				}
+				if (req.query.to) {
+					conditions.to = credential.person;
+				}
+				if (req.query.from || req.query.to) {
+					Introduction.find(conditions, 
+						function(err, introductions) {
+							if (!err) {
+								res.send(introductions);
+							} else {
+								res.statusCode = 500;
+								res.send('');
+							}
 						}
-					}
-				);
+					);
+				} else {
+					Organizer.find(conditions,
+						function(err, organizers) {
+							if (!err) {
+								var isOrganizer = false;
+								for (var i = 0; i < organizers.length; i++) {
+									if (organizers[i].person == credential.person) {
+										isOrganizer = true;
+									}
+								}
+								if (isOrganizer) {
+									Introduction.find(conditions, 
+										function(err, introductions) {
+											if (!err) {
+												res.send(introductions);
+											} else {
+												res.statusCode = 500;
+												res.send('');
+											}
+										}
+									);
+								} else {
+									res.statusCode = 400;
+									res.send('');
+								}
+							} else 	{
+								res.statusCode = 500;
+								res.send('');
+							}
+						}
+					);
+				}
 			} else {
 				res.statusCode = 400;
 				res.send('');
