@@ -2,15 +2,15 @@ var module = angular.module('channelServices', []);
 
 module.service('channel', ['$http', function($http) {
 	var service = {
+		running: false
 	};
-	var running =  false;
 	var _id;
 	var token;
 	var error;
 	var message;
 	var close;
 	var reset = function() {
-		running = false;
+		service.running = false;
 		_id = null;
 		token = null;
 		error = null;
@@ -41,10 +41,10 @@ module.service('channel', ['$http', function($http) {
 		error = p_error;
 		message = p_message;
 		close = p_close;
-		if (!running) {
+		if (!service.running) {
 			$http({method: 'GET', url: 'http://introduce.solutions:3001/open/' + _id}).
 			success(function(data, status, headers, config) {
-				running = true;
+				service.running = true;
 				token = data.token;
 				success();
 				if (data.close) {
@@ -58,7 +58,7 @@ module.service('channel', ['$http', function($http) {
 				}
 			}).
 			error(function(data, status, headers, config) {
-				error();
+				error(status);
 				reset();
 			});
 		} else {
@@ -66,7 +66,7 @@ module.service('channel', ['$http', function($http) {
 		}
 	};
 	service.close = function() {
-		if (running) {
+		if (service.running) {
 			$http({method: 'GET', url: 'http://introduce.solutions:3001/close/' + _id + '?token=' + token});
 		}
 	}

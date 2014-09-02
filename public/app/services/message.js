@@ -33,6 +33,16 @@ module.service('message', ['$http', 'linkedIn', function($http, linkedIn) {
 			error();
 		});
 	};
+
+	service.cancel= function(person, success, error) {
+		$http({method: 'GET', url: '/messages/cancel?token=' + linkedIn.token + '&person=' + person}).
+		success(function(data, status, headers, config) {
+			success();
+		}).
+		error(function(data, status, headers, config) {
+			error();
+		});
+	};
 	
 	return service;
 }]);

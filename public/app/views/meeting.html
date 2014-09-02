@@ -29,6 +29,7 @@
 					<p ng-if="!current">Event has ended.</p>
 					<p ng-if="state == 'duplicate'">Another application is currently scanning.</p>
 					<p ng-if="state == 'error'">A network error has occurred; check your network connectivity and try again.</p>
+					<p ng-if="state == 'cancel'">{{person.first}} has cancelled.</p>
 					<div ng-if="state == 'scanning' || state == 'waiting'" class="scanning"></div>
 					<p ng-if="state == 'found'">{{person.first}} found you.</p>
 				</td>

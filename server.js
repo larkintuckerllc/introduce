@@ -6,7 +6,12 @@ var serveStatic = require('serve-static');
 app.use(serveStatic('public', {
 	'index': ['index.html'], 
 	'setHeaders': function(res, path) {
-       		res.setHeader("cache-control","private, max-age=0, no-cache");
+		var items = path.split('/');
+		if (items[items.length - 1] == 'project.manifest') {
+       			res.setHeader("cache-control","private, max-age=0, no-cache");
+		} else {
+       			res.setHeader("cache-control", "max-age=300");
+		}
 	} 
 }));
 var bodyParser = require('body-parser');

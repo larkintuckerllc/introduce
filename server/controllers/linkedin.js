@@ -1,7 +1,7 @@
 var https = require('https');
 var LinkedIn = require('../models/linkedin');
 
-// TODO JET REMOVED SECRET 
+// TODO JET REMOVED SECRET
 var OAuth2 = {
 	clientID: 'XXXXX',
 	clientSecret: 'XXXXX',

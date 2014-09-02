@@ -1,13 +1,16 @@
 CACHE MANIFEST
-# 2014-08-22v1
+# 2014-09-02v1
 
 CACHE:
 
 /bower_components/angular-block-ui/angular-block-ui.min.css
 /bower_components/angular-block-ui/angular-block-ui.min.js
 /bower_components/angular/angular.min.js
+/bower_components/angular/angular.min.js.map
 /bower_components/angular-resource/angular-resource.min.js
+/bower_components/angular-resource/angular-resource.min.js.map
 /bower_components/angular-route/angular-route.min.js
+/bower_components/angular-route/angular-route.min.js.map
 services/linkedin.js
 services/navigator.js
 services/restful.js
@@ -21,6 +24,7 @@ assets/fonts/glyphicons-halflings-regular.woff
 assets/fonts/glyphicons-halflings-regular.svg
 assets/fonts/glyphicons-halflings-regular.eot
 assets/img/someone.png
+assets/img/linkedin.png
 assets/img/touch-icon-114.png
 assets/img/touch-icon-57.png
 assets/img/touch-icon-72.png

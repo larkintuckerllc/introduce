@@ -4,15 +4,39 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 	blockUI.start();
         if (linkedIn.authenticated()) {
 		$scope.state = 'loading';
-		$scope.person = {};
+		$scope.person = null;
 		var d = new Date();
 		var now = d.getTime();
 		$scope.current = true;
-		$scope.cancel = function() {
-			navigator.navigate('/events/' + $scope.event._id);
-		};
 		var scanning = null;
-
+		$scope.cancel = function() {
+			switch($scope.state) {
+				case 'scanning':
+					channel.close();
+					navigator.navigate('/events/' + $scope.event._id);
+					break;
+				case 'searching':
+				case 'waiting':
+				case 'found':
+					channel.close();
+					blockUI.start();
+					message.cancel($scope.person._id,
+						function() {
+							// SUCCESS
+							blockUI.stop();
+							navigator.navigate('/events/' + $scope.event._id);
+						},
+						function() {
+							// ERROR
+							blockUI.reset();
+							navigator.navigate('/events/' + $scope.event._id);
+						}
+					);
+					break;
+				default:
+					navigator.navigate('/events/' + $scope.event._id);
+			}
+		};
 		var findScanningPerson = function(scannings, introductionsFrom, introductionsTo) {
 			var found = false;
 			scannings = $filter('orderBy')(scannings, 'order', true); 
@@ -31,7 +55,6 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 			}	
 			return found;
 		};
-
 		var goScanning = function() {
 			blockUI.start();
 			scanning = new Scannings({event: $scope.event._id});
@@ -160,6 +183,14 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 			}
 		};
 
+		$scope.found = function() {
+			if ($scope.state != 'found') {
+				goWaiting();	
+			} else {
+				goMeeting(true);
+			}
+		};
+
 		blockUI.start();
 		$scope.event = Events.get({token: linkedIn.token, _id: $routeParams._id},
 			function() {
@@ -189,17 +220,6 @@ var introductionsFrom = Introductions.query(
 	channel.open(linkedIn.person,
 		function() {
 			// SUCCESS
-			$scope.cancel = function() {
-				channel.close();
-				navigator.navigate('/events/' + $scope.event._id);
-			};
-			$scope.found = function() {
-				if ($scope.state != 'found') {
-					goWaiting();	
-				} else {
-					goMeeting(true);
-				}
-			};
 			var scanningPerson = findScanningPerson(scannings, introductionsFrom, introductionsTo); 
 			if (scanningPerson) {
 				goSearching(scanningPerson, true);
@@ -208,29 +228,34 @@ var introductionsFrom = Introductions.query(
 			} 
 			blockUI.stop();
 		},
-		function() {
+		function(status) {
 			// ERROR
-			$scope.state = 'error';
+			if (status == 401) {
+				$scope.state = 'duplicate';
+			} else {
+				$scope.state = 'error';
+			}
 			blockUI.reset();
 		},
 		function(data) {
 			// MESSAGE
 			var message = angular.fromJson(data);
-			if (message.state == 'searching') {
+			if (($scope.state == 'scanning') && (message.state == 'searching')) {
 				goSearching(message.person, false);
 			} 
-			if ((message.state == 'found') && (message.person == $scope.person._id)) {
+			if (($scope.state == 'searching') && (message.state == 'found') && (message.person == $scope.person._id)) {
 				goFound();
 			} 
-			if ((message.state == 'meeting') && (message.person == $scope.person._id)) {
+			if (($scope.state == 'waiting') && (message.state == 'meeting') && (message.person == $scope.person._id)) {
 				goMeeting(false);
+			}
+			if ((message.state == 'cancel') && (message.person == $scope.person._id)) {
+				channel.close();
+				$scope.state = 'cancel';
 			}
 		},
 		function() {
 			// CLOSE
-			$scope.cancel = function() {
-				navigator.navigate('/events/' + $scope.event._id);
-			};
 		}
 	);
 	blockUI.stop();
