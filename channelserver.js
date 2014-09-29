@@ -6,7 +6,8 @@ var channels = {};
 var messages = [];
 
 http.createServer(function(req, res) {
-	var TIMEOUT = 30000;
+	var REQ_TIMEOUT = 30000;
+	var CH_TIMEOUT = 35000; 
 	var action = 'error';
 	var _id;
 	var token;
@@ -39,18 +40,18 @@ http.createServer(function(req, res) {
 			var now = new Date();
 			var position = channelsIndex.indexOf(_id);
 			var error = false;
-			var timeout = TIMEOUT;  
+			var timeout = REQ_TIMEOUT;  
 			if (position == -1) {
 				timeout = 1000;
 				channelsIndex.push(_id);
 				channels[_id] = {
-					expiration: now.getTime() + TIMEOUT + 20000,
+					expiration: now.getTime() + CH_TIMEOUT,
 					token: now.getTime().toString(),
 					locked: false
 				};
 			} else {
 				if (token == channels[_id].token) {
-					channels[_id].expiration = now.getTime() + TIMEOUT + 20000;
+					channels[_id].expiration = now.getTime() + CH_TIMEOUT;
 				} else {
 					error = true;
 				}
@@ -136,6 +137,25 @@ http.createServer(function(req, res) {
 
 }).listen(3001);
 
+var cleanUp = function(_id) {
+	// TODO JET: REMOVED SECRET 
+	var options = {
+		hostname: 'introduce.solutions',
+		port: 80,
+		path: '/channels/' + _id + '?token=XXXXX',
+		method: 'DELETE'
+	};
+	var req2 = http.request(options, function(res2) {
+		res2.on('data', function (chunk) {
+		});
+		res2.on('end', function () {
+		});
+	});
+	req2.on('error', function(e) {
+	});
+	req2.end();
+}
+
 setInterval(function() {
 	var now = new Date();
 	var nowTime = now.getTime();
@@ -158,9 +178,10 @@ setInterval(function() {
 		if (channels[channelsIndex[i]].expiration <= nowTime) {
 			for (var j = messagesLength - 1; j >= 0; j--) {
 				if (messages[j]._id == channelsIndex[i]) {
-					messsagesIndex.splice(j,1);
+					messages.splice(j,1);
 				}
 			}	
+			cleanUp(channelsIndex[i]);
 			delete channels[channelsIndex[i]];
 			channelsIndex.splice(i,1);
 		}
@@ -175,27 +196,10 @@ setInterval(function() {
 
 			// CLOSING CHANNEL
 			if (messages[i].close) {
+				cleanUp(req._id);
 				req.res.end(JSON.stringify({token: channels[req._id].token, close: true}));
 				delete channels[req._id];	
 				channelsIndex.splice(channelsIndex.indexOf(req._id),1);
-
-				// CLEAN-UP ON CLOSE
-				// TODO JET: REMOVED SECRET
-				var options = {
-					hostname: 'introduce.solutions',
-					port: 80,
-					path: '/channels/' + req._id + '?token=XXXXX',
-					method: 'DELETE'
-				};
-				var req2 = http.request(options, function(res2) {
-					res2.on('data', function (chunk) {
-					});
-					res2.on('end', function () {
-					});
-				});
-				req2.on('error', function(e) {
-				});
-				req2.end();
 			} else {
 				req.res.end(JSON.stringify({token: channels[req._id].token, data: messages[i].data}));
 			}
