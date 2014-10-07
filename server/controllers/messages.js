@@ -1,14 +1,14 @@
 var http = require('http');
+var config = require('config');
 var LinkedIn = require('../models/linkedin');
 
-// TODO JET: REMOVED SECRET
 var send = function(person, message, success, error) {
 	var options = {
 		hostname: 'introduce.solutions',
 		port: 3001,
 		path: '/message/' + 
 			person +
-			'?token=XXXXX' + 
+			'?token=' + config.get('ChannelServer.token') +
 			'&data=' + JSON.stringify(message),
 		method: 'GET'
 	};

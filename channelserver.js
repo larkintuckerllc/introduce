@@ -1,4 +1,5 @@
-var http = require("http");
+var http = require('http');
+var config = require('config');
 var reqsIndex = [];
 var reqs = {};
 var channelsIndex = [];
@@ -25,9 +26,8 @@ http.createServer(function(req, res) {
 				token = match[2];
 			}
 		}
-		// TODO JET: REMOVED SECRET
 		if (action == 'message') {
-			regex = /^(.*)\?token=XXXXX&data=(.*)$/;
+			regex = new RegExp('^(.*)\\?token=' + config.get('ChannelServer.token') + '&data=(.*)$');			
 			match = _id.match(regex);
 			if (match) {
 				_id = match[1];
@@ -138,11 +138,10 @@ http.createServer(function(req, res) {
 }).listen(3001);
 
 var cleanUp = function(_id) {
-	// TODO JET: REMOVED SECRET 
 	var options = {
 		hostname: 'introduce.solutions',
 		port: 80,
-		path: '/channels/' + _id + '?token=XXXXX',
+		path: '/channels/' + _id + '?token=' + config.get('ChannelServer.token'),
 		method: 'DELETE'
 	};
 	var req2 = http.request(options, function(res2) {

@@ -1,3 +1,4 @@
+/config/production.json
 /node_modules
 /public/bower_components
 /public/app/assets/css/bootstrap.min.css

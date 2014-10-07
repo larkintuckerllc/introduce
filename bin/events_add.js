@@ -7,9 +7,9 @@ mongoose.connect('mongodb://localhost/hellodb');
 var Event = require('../server/models/events');
 
 var event = new Event({
-	name: 'September Test Event', 
-	start: 1409544000000, 
-	end: 1412136000000,
+	name: 'October Test Event', 
+	start: 1412136000000,
+	end: 1414814400000,
 	link: 'http://gainnet.org',
 	image: 'assets/dynamic/img/gain.png' 
 });		

@@ -1,10 +1,10 @@
 var https = require('https');
+var config = require('config');
 var LinkedIn = require('../models/linkedin');
 
-// TODO JET REMOVED SECRET
 var OAuth2 = {
-	clientID: 'XXXXX',
-	clientSecret: 'XXXXX',
+	clientID: config.get('LinkedIn.clientID'),
+	clientSecret: config.get('LinkedIn.clientSecret'),
 	site: 'www.linkedin.com',
 	authorizationPath: '/uas/oauth2/authorization',
 	tokenPath: '/uas/oauth2/accessToken'

@@ -1,6 +1,6 @@
 var request = require('supertest');
 request = request('http://localhost:3000');
-var token = 'AQVeqIuJeuDTaqh7o5a-Au1uVtuiXCQ0LxcSijRgdtdSmYQb7vn_1oC621f1y3Dg4gzFrmlv1GA5K4PLRR4x9QOmXzfW1JPtiIeZbNev5aD3ij6LPenL5kNiBYiNHk6GgSlVsQtZfDGELTtawAx8PygYDDZtYutgUEjTyhKabJOUtF9nsiA';
+var token = 'AQV6jkGniAc4LSqVZ7XQS_vlZNfCJW5xaHiClMXmp0jRjOgHqOJDSicq980BOSwtJqHN6kxoBWq6fGdZIm__6Wl08uE_iTjl9I9bhJyr2U_3jo_jxFu50K0FjrRvQjtFZUblyp-IpaxvNYxXeUhLdbwKs2cqI0rAjey_biKt1cflhUEnSX0';
 
 describe('Events', function() {
 	it('respond with json', function(done) {

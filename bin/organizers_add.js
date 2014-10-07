@@ -9,7 +9,7 @@ require('../server/models/events');
 var Organizer = require('../server/models/organizers');
 
 var organizer = new Organizer({
-	event: '5412ee7ce5c350a743712bb9', 
+	event: '542d8bdbf5881ac5088bb908', 
 	person: 'zDmzQyQfNF'
 });		
 organizer.save(function(err) {
