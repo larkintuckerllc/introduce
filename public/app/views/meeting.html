@@ -14,16 +14,17 @@
 			</tr>
 		</table>
 	</div>
-	<div class="panel-body text-center">
+	<div ng-class="{'panel-body': true, 'text-center': true, 'pinging': pinged}">
 		<img ng-if="(state != 'duplicate') && (state != 'error') && person.picture" ng-src="{{person.picture}}" class="img-responsive img-thumbnail"/>
 		<img ng-if="(state != 'duplicate') && (state != 'error') && !person.picture" src="assets/img/someone.png" class="img-responsive img-thumbnail"/>
 		<p ng-if="(state != 'duplicate') && (state != 'error') && person.last" style="margin-top: 15px;"><strong>{{person.first}} {{person.last}}</strong></p>
 	</div>
-	<div ng-if="state != 'meeting'" class="panel-footer">
+	<div ng-if="state != 'meeting'" ng-class="{'panel-footer': true, 'pinging': pinging}">
 		<table style="width: 100%">
 			<tr>
 				<td style="text-align: left; vertical-align: middle; width: 20%;">
-					<button ng-if="state == 'searching' || state == 'found'" ng-click="found()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span> Found</button>
+					<button ng-if="state == 'searching' || state == 'found'" ng-click="ping()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span> Ping</button>
+					<span ng-if="state != 'searching' && state != 'found'">&nbsp;</span>
 				</td>
 				<td style="text-align: center; vertical-align: middle; width: 60%;">
 					<p ng-if="!current">Event has ended.</p>
@@ -34,7 +35,7 @@
 					<p ng-if="state == 'found'">{{person.first}} found you.</p>
 				</td>
 				<td style="text-align: right; vertical-align: middle; width: 20%;">
-					&nbsp;
+					<button ng-if="state == 'searching' || state == 'found'" ng-click="found()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-user"></span> Found</button>
 				</td>
 			</tr>
 		</table>

@@ -56,6 +56,33 @@ exports.searching = function(req, res) {
 	);
 }
 
+exports.ping = function(req, res) {
+	res.setHeader("cache-control","private, max-age=0, no-cache");
+        var token = req.query.token;
+	var person = req.query.person;
+	LinkedIn.authenticated(token,
+		function(credential) {
+			// SUCCESS
+			send(person, {ping: true, person: credential.person},
+				function() {
+					// SUCCESS
+					res.send('');
+				},
+				function() {
+					// ERROR
+					res.statusCode = 500;
+					res.send('');
+				}
+			);
+		},
+		function() {
+			// ERROR
+			res.statusCode = 401;
+			res.send('');
+		}
+	);
+};;
+
 exports.found = function(req, res) {
 	res.setHeader("cache-control","private, max-age=0, no-cache");
         var token = req.query.token;

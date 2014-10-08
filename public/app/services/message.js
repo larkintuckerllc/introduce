@@ -14,6 +14,16 @@ module.service('message', ['$http', 'linkedIn', function($http, linkedIn) {
 
 	};
 
+	service.ping = function(person, success, error) {
+		$http({method: 'GET', url: '/messages/ping?token=' + linkedIn.token + '&person=' + person}).
+		success(function(data, status, headers, config) {
+			success();
+		}).
+		error(function(data, status, headers, config) {
+			error();
+		});
+	};
+
 	service.found = function(person, success, error) {
 		$http({method: 'GET', url: '/messages/found?token=' + linkedIn.token + '&person=' + person}).
 		success(function(data, status, headers, config) {

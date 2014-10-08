@@ -38,7 +38,7 @@
 	margin-left: -5px;
 	background-color: #bbbbbb;
 	-webkit-animation-name: scanning_animation;
-	-webkit-animation-duration: 5s;
+	-webkit-animation-duration: 3s;
 	-webkit-animation-timing-function: linear;
 	-webkit-animation-iteration-count: infinite;
 	-webkit-animation-play-state: running;
@@ -59,4 +59,30 @@
 	0%   {left: 10%;}
 	50%  {left: 90%;}
 	100% {left: 10%;}
+} 
+
+.pinging {
+	background-color: rgba(88,88,217,0.25);
+	-webkit-animation-name: pinging_animation;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-timing-function: ease;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-play-state: running;
+	animation-name: pinging_animation;
+	animation-duration: 1s;
+	animation-timing-function: ease;
+	animation-iteration-count: infinite;
+	animation-play-state: running;
+}
+
+@-webkit-keyframes pinging_animation {
+	0%   {background-color: rgba(88,88,217,0.25);}
+	50%  {background-color: rgba(88,88,217,0.5);}
+	100% {background-color: rgba(88,88,217,0.25);}
+}
+
+@keyframes pinging_animation {
+	0%   {background-color: rgba(88,88,217,0.25);}
+	50%  {background-color: rgba(88,88,217,0.5);}
+	100% {background-color: rgba(88,88,217,0.25);}
 } 

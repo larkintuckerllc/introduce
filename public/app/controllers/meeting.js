@@ -1,6 +1,6 @@
 var meetingControllers = angular.module('meetingControllers', []);
 
-meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routeParams', 'linkedIn', 'Events', 'channel', 'Scannings', 'Persons', 'message', 'Introductions', 'blockUI', '$filter', function($scope, navigator, $routeParams, linkedIn, Events, channel, Scannings, Persons, message, Introductions, blockUI, $filter) {
+meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routeParams', 'linkedIn', 'Events', 'channel', 'Scannings', 'Persons', 'message', 'Introductions', 'blockUI', '$filter', '$timeout', function($scope, navigator, $routeParams, linkedIn, Events, channel, Scannings, Persons, message, Introductions, blockUI, $filter, $timeout) {
 	blockUI.start();
         if (linkedIn.authenticated()) {
 		$scope.state = 'loading';
@@ -9,6 +9,8 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 		var now = d.getTime();
 		$scope.current = true;
 		var scanning = null;
+		$scope.pinging = false;
+		$scope.pinged = false;
 		$scope.cancel = function() {
 			switch($scope.state) {
 				case 'scanning':
@@ -123,6 +125,23 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 				}
 			);
 		};
+
+		$scope.ping = function() {
+			if (!$scope.pinging) {
+				$scope.pinging = true;
+				$timeout(function() {
+					$scope.pinging = false;
+				}, 5000);
+				message.ping($scope.person._id,
+					function() {
+						// SUCCESS
+					},
+					function() {
+						// ERROR
+					}
+				);
+			}
+		}
 
 		var goWaiting = function() {
 			blockUI.start();
@@ -252,6 +271,14 @@ var introductionsFrom = Introductions.query(
 			if ((message.state == 'cancel') && (message.person == $scope.person._id)) {
 				channel.close();
 				$scope.state = 'cancel';
+			}
+			if ((message.ping) && (message.person == $scope.person._id)) {
+				if (!$scope.pinged) {
+					$scope.pinged = true;
+					$timeout(function() {
+						$scope.pinged = false;
+					}, 5000);
+				}
 			}
 		},
 		function() {
