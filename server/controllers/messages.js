@@ -1,33 +1,7 @@
 var http = require('http');
 var config = require('config');
 var LinkedIn = require('../models/linkedin');
-
-var send = function(person, message, success, error) {
-	var options = {
-		hostname: 'introduce.solutions',
-		port: 3001,
-		path: '/message/' + 
-			person +
-			'?token=' + config.get('ChannelServer.token') +
-			'&data=' + JSON.stringify(message),
-		method: 'GET'
-	};
-	var req2 = http.request(options, function(res2) {
-		res2.on('data', function (chunk) {
-		});
-		res2.on('end', function () {
-		});
-		if (res2.statusCode == 200) {
-			success();
-		} else {
-			error();	
-		}
-	});
-	req2.on('error', function(e) {
-		error();
-	});
-	req2.end();
-};
+var channels = require('./channels.js');
 
 exports.searching = function(req, res) {
 	res.setHeader("cache-control","private, max-age=0, no-cache");
@@ -36,7 +10,7 @@ exports.searching = function(req, res) {
 	LinkedIn.authenticated(token,
 		function(credential) {
 			// SUCCESS
-			send(person, {state: 'searching', person: credential.person},
+			channels.message(person, {state: 'searching', person: credential.person},
 				function() {
 					// SUCCESS
 					res.send('');
@@ -63,7 +37,7 @@ exports.ping = function(req, res) {
 	LinkedIn.authenticated(token,
 		function(credential) {
 			// SUCCESS
-			send(person, {ping: true, person: credential.person},
+			channels.message(person, {ping: true, person: credential.person},
 				function() {
 					// SUCCESS
 					res.send('');
@@ -90,7 +64,7 @@ exports.found = function(req, res) {
 	LinkedIn.authenticated(token,
 		function(credential) {
 			// SUCCESS
-			send(person, {state: 'found', person: credential.person},
+			channels.message(person, {state: 'found', person: credential.person},
 				function() {
 					// SUCCESS
 					res.send('');
@@ -117,7 +91,7 @@ exports.meeting = function(req, res) {
 	LinkedIn.authenticated(token,
 		function(credential) {
 			// SUCCESS
-			send(person, {state: 'meeting', person: credential.person},
+			channels.message(person, {state: 'meeting', person: credential.person},
 				function() {
 					// SUCCESS
 					res.send('');
@@ -144,7 +118,7 @@ exports.cancel = function(req, res) {
 	LinkedIn.authenticated(token,
 		function(credential) {
 			// SUCCESS
-			send(person, {state: 'cancel', person: credential.person},
+			channels.message(person, {state: 'cancel', person: credential.person},
 				function() {
 					// SUCCESS
 					res.send('');

@@ -3,55 +3,34 @@ var module = angular.module('messageServices', []);
 module.service('message', ['$http', 'linkedIn', function($http, linkedIn) {
 	var service = {
 	};
-	service.searching = function(person, success, error) {
-		$http({method: 'GET', url: '/messages/searching?token=' + linkedIn.token + '&person=' + person}).
+	function send(path, person, success, error) {
+		$http({method: 'GET', url: path + '?token=' + linkedIn.token + '&person=' + person}).
 		success(function(data, status, headers, config) {
 			success();
 		}).
 		error(function(data, status, headers, config) {
 			error();
 		});
+	}
 
+	service.searching = function(person, success, error) {
+		send('/messages/searching', person, success, error);
 	};
 
 	service.ping = function(person, success, error) {
-		$http({method: 'GET', url: '/messages/ping?token=' + linkedIn.token + '&person=' + person}).
-		success(function(data, status, headers, config) {
-			success();
-		}).
-		error(function(data, status, headers, config) {
-			error();
-		});
+		send('/messages/ping', person, success, error);
 	};
 
 	service.found = function(person, success, error) {
-		$http({method: 'GET', url: '/messages/found?token=' + linkedIn.token + '&person=' + person}).
-		success(function(data, status, headers, config) {
-			success();
-		}).
-		error(function(data, status, headers, config) {
-			error();
-		});
+		send('/messages/found', person, success, error);
 	};
 
 	service.meeting = function(person, success, error) {
-		$http({method: 'GET', url: '/messages/meeting?token=' + linkedIn.token + '&person=' + person}).
-		success(function(data, status, headers, config) {
-			success();
-		}).
-		error(function(data, status, headers, config) {
-			error();
-		});
+		send('/messages/meeting', person, success, error);
 	};
 
 	service.cancel= function(person, success, error) {
-		$http({method: 'GET', url: '/messages/cancel?token=' + linkedIn.token + '&person=' + person}).
-		success(function(data, status, headers, config) {
-			success();
-		}).
-		error(function(data, status, headers, config) {
-			error();
-		});
+		send('/messages/cancel', person, success, error);
 	};
 	
 	return service;

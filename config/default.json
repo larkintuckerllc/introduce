@@ -1,7 +1,4 @@
 {
-	"ChannelServer": {
-		"token": ""
-	},
 	"LinkedIn": {
 		"clientID": "",
 		"clientSecret": ""

@@ -162,6 +162,7 @@ meetingControllers.controller('MeetingCtrl', ['$scope', 'navigator', '$routePara
 
 		var goFound = function() {
 			$scope.state = 'found';
+			$scope.$apply();
 		};
 
 		var goMeeting = function(directly) {
@@ -251,9 +252,11 @@ var introductionsFrom = Introductions.query(
 			// ERROR
 			if (status == 401) {
 				$scope.state = 'duplicate';
+				$scope.$apply();
 			} else {
 				$scope.state = 'error';
-			}
+				$scope.$apply();
+			} 
 			blockUI.reset();
 		},
 		function(data) {
@@ -271,10 +274,12 @@ var introductionsFrom = Introductions.query(
 			if ((message.state == 'cancel') && (message.person == $scope.person._id)) {
 				channel.close();
 				$scope.state = 'cancel';
+				$scope.$apply();
 			}
 			if ((message.ping) && (message.person == $scope.person._id)) {
 				if (!$scope.pinged) {
 					$scope.pinged = true;
+					$scope.$apply();
 					$timeout(function() {
 						$scope.pinged = false;
 					}, 5000);

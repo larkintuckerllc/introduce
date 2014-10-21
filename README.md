@@ -13,8 +13,10 @@ While the hellomeanX applications used the simple-oauth2 package to authenticate
 
 _channel_
 
-While the hellochannel application used the Google Channel Service to do the push messaging, ended up writing a separate web service running on a separate port (channelservice.js) that consists of a simple Node.js application, i.e., no Express, no databases, etc. 
+This application has been rewritten multiple times to with different strategies for doing real-time messaging.
 
-This change was primerily done because of a mistake in the use of Node.js' http feature that was causing what appeared to be random latency. Thinking the problem was withe Google Channel Service, wrote up a replacement.  Turns out that the problem persisted and ended up fixing the bug in the use of the http feature.  
+The first strategy was to use Google Channel Service which required writing a small Java applicaiton on Google App Engine.
 
-Ended up sticking with channelservice.js as it gives one more control of the operation of the push messaging.
+In an effort to get away from Google App Engine, wrote a replacement Node.js COMET (long-polling) service.
+
+Finally, learned that Socket.IO was a common Node.js real-time engine that greatly simplified ths application.

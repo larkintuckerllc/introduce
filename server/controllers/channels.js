@@ -1,26 +1,34 @@
-var Scanning = require('../models/scannings');
+var Scannings = require('../models/scannings.js');
+var identitySocketMap = {};
+var socketIdentityMap = {};
+var io;
 
-exports.delete = function(req, res) {
-	res.setHeader("cache-control","private, max-age=0, no-cache");
-        var token = req.query.token;
-        var _id = req.params._id;
-	if (token == 'secret') {
-		Scanning.findByIdAndRemove(_id, function(err, scanning) {
-			if (!err) {
-				if (scanning) {
-					res.send(scanning);
-				} else {
-					res.statusCode = 404;
-					res.send('');
-				}
-				
+exports.init = function(server) {
+	io = require('socket.io').listen(server);
+	io.on('connection', function(socket){
+		socket.on('identify', function(data){
+			if (data in identitySocketMap) {
+				io.to(socket.id).emit('duplicate');	
 			} else {
-				res.statusCode = 500;
-				res.send('');
+				io.to(socket.id).emit('unique');	
+				identitySocketMap[data] = socket.id;
+				socketIdentityMap[socket.id] = data;
 			}
 		});
-	} else {
-		res.statusCode = 401;
-		res.send('');
-	}
+		socket.on('disconnect', function(){
+			Scannings.findByIdAndRemove(socketIdentityMap[socket.id], function(err, scanning) {
+			});
+			delete identitySocketMap[socketIdentityMap[socket.id]];
+			delete socketIdentityMap[socket.id];
+		});
+	});
 };
+
+exports.message = function(_id, data, success, error) {
+	if (_id in identitySocketMap) {
+		io.to(identitySocketMap[_id]).emit('message', data);
+		success();
+	} else {
+		error();
+	}
+}

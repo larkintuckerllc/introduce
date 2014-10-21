@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 
-// CONTRIBUTED MIDDLEWARE
+// MIDDLEWARE
 var serveStatic = require('serve-static');
 app.use(serveStatic('public', {
 	'index': ['index.html'], 
@@ -32,6 +32,9 @@ app.use('/persons', require('./server/routes/persons'));
 app.use('/messages', require('./server/routes/messages'));
 app.use('/introductions', require('./server/routes/introductions'));
 app.use('/organizers', require('./server/routes/organizers'));
-app.use('/channels', require('./server/routes/channels'));
+//app.use('/channels', require('./server/routes/channels'));
 
-app.listen(3000);
+var server = app.listen(3000);
+
+// REAL-TIME ENGINE
+require('./server/controllers/channels.js').init(server);
